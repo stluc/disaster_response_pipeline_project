@@ -1,5 +1,7 @@
 # import packages
 import sys
+import pandas as pd
+import sqlalchemy
 
 
 def load_data(data_file):
