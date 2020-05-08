@@ -56,7 +56,7 @@ def clean_data(df):
 
     except:
         print('Unknown error while cleaning the data.')
-    
+
     finally:
         return clean_df
 
@@ -64,9 +64,9 @@ def clean_data(df):
 def save_data(df, database_filename):
     """
         :arg df: (DataFrame) Pandas DataFrame to be saved
-        :arg database_filename: (string) Name of the SQL Database
+        :arg database_filename: (string) Name of the SQLite Database
     """
-    engine = create_engine('sqlite:///' + database_filename)
+    engine = create_engine('sqlite:///' + database_filename + '.db')
     df.to_sql(database_filename, engine, index=False)
 
 
@@ -98,4 +98,3 @@ def main():
 
 if __name__ == '__main__':
     main()
- #+
