@@ -40,7 +40,6 @@ def clean_data(df):
 
         :return: clean_df: (DataFrame) Categories rearranged into columns and duplicate data removed.
     """
-    clean_df: DataFrame = df.drop('categories', axis=1).copy()
     try:
         categories = df.categories.str.split(';', expand=True)
         row = categories.iloc[0]
@@ -52,13 +51,11 @@ def clean_data(df):
             # convert column from string to numeric
             categories[column] = pd.to_numeric(categories[column])
 
-        clean_df = pd.concat([df, categories], axis=1).drop_duplicates()
+        clean_df = pd.concat([df, categories], axis=1).drop('categories', axis=1).drop_duplicates()
+        return clean_df
 
     except:
         print('Unknown error while cleaning the data.')
-
-    finally:
-        return clean_df
 
 
 def save_data(df, database_filename):
@@ -67,7 +64,7 @@ def save_data(df, database_filename):
         :arg database_filename: (string) Name of the SQLite Database
     """
     engine = create_engine('sqlite:///' + database_filename)
-    df.to_sql('DisasterResponse', engine, index=False)
+    df.to_sql('DisasterResponse', engine, index=False, if_exists='replace')
 
 
 def main():
