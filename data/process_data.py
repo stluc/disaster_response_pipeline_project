@@ -66,8 +66,8 @@ def save_data(df, database_filename):
         :arg df: (DataFrame) Pandas DataFrame to be saved
         :arg database_filename: (string) Name of the SQLite Database
     """
-    engine = create_engine('sqlite:///' + database_filename + '.db')
-    df.to_sql(database_filename, engine, index=False)
+    engine = create_engine('sqlite:///' + database_filename)
+    df.to_sql('DisasterResponse', engine, index=False)
 
 
 def main():
