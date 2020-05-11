@@ -1,8 +1,6 @@
 # import packages
 import sys
-import os
 import re
-from contextlib import redirect_stdout
 
 import joblib
 import nltk
@@ -15,19 +13,16 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.metrics import classification_report, f1_score
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.multioutput import MultiOutputClassifier
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sqlalchemy import create_engine
 
-with redirect_stdout(open(os.devnull, "w")):
-    nltk.download(['punkt', 'wordnet', 'stopwords', 'words',
-                   'averaged_perceptron_tagger', 'maxent_ne_chunker', 'omw'])
+nltk.download(['punkt', 'wordnet', 'stopwords', 'words',
+                   'averaged_perceptron_tagger', 'maxent_ne_chunker', 'omw'], quiet=True)
 
 
 def load_data(data_file):
     """
-    :arg data_file: (string) file path to SQLite Database
-    containing DisasterResponse table.
+    :arg data_file: (string) file path to SQLite Database containing DisasterResponse table.
     :return x: (Array) variable columns
     :return y: (Array) classifications
     :return labels: (list) column label for y
@@ -107,7 +102,7 @@ def build_model():
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
-        ('clf', MultiOutputClassifier(RandomForestClassifier(), n_jobs=-1))
+        ('clf', MultiOutputClassifier(RandomForestClassifier()))
     ])
 
     parameters = {
@@ -133,12 +128,17 @@ def train(x, y, model, labels):
 
 def export_model(model):
     joblib.dump(model, 'model')
+    print('Model exported.')
 
 
 def run_pipeline(data_file):
+    """:arg data_file: (string) relative path to SQLite database"""
 
+    print('Loading data.')
     x, y, labels = load_data(data_file)  # run ETL pipeline
+    print('Data loaded. Model creation...')
     model = build_model()  # build model pipeline
+    print('Model created. Start training on dataset...')
     model, cr = train(x, y, model, labels)  # train model pipeline
     export_model(model)  # save model
 
