@@ -87,9 +87,10 @@ def display_results(y_pred, y_test, labels):
     cr = {}
     model_avg_f1 = np.empty(len(labels))
     for i, label in enumerate(labels):
+        labels_classification = np.unique(y_pred).sort()
         cr[label] = classification_report(
-            y_test[:, i], y_pred[:, i], labels=df[label].unique(), zero_division=0)
-        score = f1_score(y_test[:, i], y_pred[:, i], labels=df[label],
+            y_test[:, i], y_pred[:, i], labels=labels_classification, zero_division=0)
+        score = f1_score(y_test[:, i], y_pred[:, i], labels=labels_classification,
                          average='weighted', zero_division=0)
         model_avg_f1[i] = score
 
@@ -124,7 +125,6 @@ def train(x, y, model, labels):
     cr = display_results(y_pred, y_test, labels)
 
     return model, cr
-
 
 
 def export_model(model):
