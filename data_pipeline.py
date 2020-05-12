@@ -87,7 +87,7 @@ def display_results(y_pred, y_test, labels):
     cr = {}
     model_avg_f1 = np.empty(len(labels))
     for i, label in enumerate(labels):
-        labels_classification = np.unique(y_pred).sort()
+        labels_classification = np.unique(y_pred[:, i])
         cr[label] = classification_report(
             y_test[:, i], y_pred[:, i], labels=labels_classification, zero_division=0)
         score = f1_score(y_test[:, i], y_pred[:, i], labels=labels_classification,
@@ -127,12 +127,12 @@ def train(x, y, model, labels):
     return model, cr
 
 
-def export_model(model):
-    joblib.dump(model, 'model')
-    print('Model exported.')
+def export_model(model, path):
+    joblib.dump(model, path)
+    print(f'Model exported to {path}.')
 
 
-def run_pipeline(data_file):
+def run_pipeline(data_file, export_path):
     """:arg data_file: (string) relative path to SQLite database"""
 
     print('Loading data.')
@@ -141,9 +141,9 @@ def run_pipeline(data_file):
     model = build_model()  # build model pipeline
     print('Model created. Start training on dataset...')
     model, cr = train(x, y, model, labels)  # train model pipeline
-    export_model(model)  # save model
+    export_model(model, export_path)  # save model
 
 
 if __name__ == '__main__':
     data_file = sys.argv[1]  # get filename of dataset
-    run_pipeline(data_file)  # run data pipeline
+    run_pipeline(data_file, sys.argv[2])  # run data pipeline
