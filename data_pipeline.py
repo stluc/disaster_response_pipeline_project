@@ -128,7 +128,7 @@ def train(x, y, model, labels):
 
 
 def export_model(model, path):
-    joblib.dump(model, path)
+    joblib.dump(model.best_estimator_, path, compress=1)
     print(f'Model exported to {path}.')
 
 
