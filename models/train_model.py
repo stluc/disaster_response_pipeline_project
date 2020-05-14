@@ -15,6 +15,7 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
+from sklearn.utils import parallel_backend
 from sqlalchemy import create_engine
 
 nltk.download(['punkt', 'wordnet', 'stopwords', 'words'], quiet=True)
@@ -120,9 +121,10 @@ def run_pipeline(data_file, export_path):
     print('Loading data.')
     x, y, labels = load_data(data_file)  # run ETL pipeline
     print('Data loaded. Model creation...')
-    model = build_model()  # build model pipeline
-    print('Model created. Start training on dataset...')
-    model, cr = train(x, y, model, labels)  # train model pipeline
+    with parallel_backend('multiprocessing'):
+        model = build_model()  # build model pipeline
+        print('Model created. Start training on dataset...')
+        model, cr = train(x, y, model, labels)  # train model pipeline
     export_model(model, export_path)  # save model
 
 
