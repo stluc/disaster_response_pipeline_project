@@ -1,6 +1,7 @@
 # import packages
 import sys
 import re
+import warnings
 
 import joblib
 import nltk
@@ -18,6 +19,7 @@ from sklearn.svm import LinearSVC
 from sklearn.utils import parallel_backend
 from sqlalchemy import create_engine
 
+warnings.filterwarnings("ignore", category=UserWarning)
 nltk.download(['punkt', 'wordnet', 'stopwords', 'words'], quiet=True)
 
 
@@ -72,14 +74,14 @@ def display_results(y_pred, y_test, labels):
     model_avg_f1 = np.empty(len(labels))
     for i, label in enumerate(labels):
         labels_classification = np.unique(y_pred[:, i])
-        cr[label] = classification_report(
-            y_test[:, i], y_pred[:, i], labels=labels_classification, zero_division=0)
+        cr[label] = classification_report(y_test[:, i], y_pred[:, i], labels=labels_classification, zero_division=0)
+        print(label, '\n', cr[label], '\n')
         score = f1_score(y_test[:, i], y_pred[:, i], labels=labels_classification,
                          average='weighted', zero_division=0)
         model_avg_f1[i] = score
 
     model_avg_f1 = np.mean(model_avg_f1)
-    print(f'The model weighted f1 score is {model_avg_f1}')
+    print(f'The model weighted f1 score on all categories is {model_avg_f1}')
     return cr
 
 
