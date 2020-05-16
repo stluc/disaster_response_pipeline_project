@@ -11,7 +11,7 @@ from flask import render_template, request, jsonify
 from nltk.corpus import stopwords, wordnet
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
-from plotly.graph_objs import Bar
+from plotly.graph_objs import Bar, Layout
 from sqlalchemy import create_engine
 
 nltk.download(['punkt', 'wordnet', 'stopwords', 'words'], quiet=True)
@@ -55,7 +55,7 @@ model = joblib.load("../models/model.pkl")
 @app.route('/index')
 def index():
     # extract data needed for visuals
-    genre_counts = df.groupby('genre').count()['message']/df['message'].count()*100
+    genre_counts = df.groupby('genre').count()['message'] / df['message'].count() * 100
     genre_names = list(genre_counts.index)
 
     cat_perc = df.drop(['message', 'original', 'genre'], axis=1).sum() / len(df) * 100
@@ -76,7 +76,8 @@ def index():
                 'title': 'Distribution of Message Genres',
                 'yaxis': {
                     'title': "Percentage [%]",
-                    'showgrid': True
+                    'showgrid': True,
+                    'gridcolor': 'rgb(0,0,0)',
                 },
                 'xaxis': {
                     'title': "Genre"
@@ -90,21 +91,21 @@ def index():
                 Bar(
                     x=cat_perc,
                     y=cat_names,
-                    orientation='h'
+                    orientation='h',
+                    hoverinfo='x'
                 )
             ],
 
-            'layout': {
-                'title': 'Distribution by Categories',
-                'yaxis': {
-                    'title': "Category"
-                },
-                'xaxis': {
-                    'title': "Percentage [%]",
-                    'showgrid': True
-                },
-                'hoverinfo': 'x'
-            }
+            'layout': Layout(title='Distribution by Categories',
+                             xaxis={'title': "Percentage [%]",
+                                    'showgrid': True,
+                                    'gridcolor': 'rgb(0,0,0)',
+                                    'automargin': True
+                                    },
+                             height=1200,
+                             margin={'l': 150},
+                             template='none'
+                             )
         }
     ]
 
